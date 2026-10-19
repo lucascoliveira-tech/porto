@@ -4,6 +4,8 @@ import com.porto.testecnae.dto.CadastroSecundarioRequest;
 import com.porto.testecnae.dto.CadastroSecundarioResponse;
 import com.porto.testecnae.dto.AtividadeEconomicaCnaeResponse;
 import com.porto.testecnae.service.CadastroSecundarioService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,12 +27,12 @@ public class CadastroSecundarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CadastroSecundarioResponse cadastrar(@RequestBody CadastroSecundarioRequest request) {
+    public CadastroSecundarioResponse cadastrar(@Valid @RequestBody CadastroSecundarioRequest request) {
         return service.cadastrar(request);
     }
 
     @GetMapping("/validar-cnae")
-    public AtividadeEconomicaCnaeResponse validarCnae(@RequestParam String codigoCnae) {
+    public AtividadeEconomicaCnaeResponse validarCnae(@RequestParam @NotBlank String codigoCnae) {
         return service.validarCnae(codigoCnae);
     }
 
