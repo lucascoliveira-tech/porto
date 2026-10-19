@@ -1,15 +1,18 @@
 package com.porto.testecnae.service.impl;
 
 import com.porto.testecnae.dto.AtividadeEconomicaCnaeResponse;
+import com.porto.testecnae.exception.CnaeNaoEncontradoException;
 import com.porto.testecnae.repository.AtividadeEconomicaCnaeRepository;
 import com.porto.testecnae.service.AtividadeEconomicaCnaeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AtividadeEconomicaCnaeServiceImpl implements AtividadeEconomicaCnaeService {
 
     private final AtividadeEconomicaCnaeRepository repository;
@@ -24,7 +27,7 @@ public class AtividadeEconomicaCnaeServiceImpl implements AtividadeEconomicaCnae
 
     @Override
     public List<AtividadeEconomicaCnaeResponse> buscarPorDescricao(String termo) {
-        return repository.buscarPorDescricao(termo)
+        return repository.findByDescricaoContainingIgnoreCaseOrderByCodigo(termo.trim())
                 .stream()
                 .map(AtividadeEconomicaCnaeResponse::fromEntity)
                 .toList();
@@ -32,8 +35,8 @@ public class AtividadeEconomicaCnaeServiceImpl implements AtividadeEconomicaCnae
 
     @Override
     public AtividadeEconomicaCnaeResponse buscarPorCodigo(String codigo) {
-        return repository.findByCodigo(codigo)
+        return repository.findByCodigo(codigo.trim())
                 .map(AtividadeEconomicaCnaeResponse::fromEntity)
-                .orElseGet(() -> AtividadeEconomicaCnaeResponse.fromEntity(repository.findAll().getFirst()));
+                .orElseThrow(() -> new CnaeNaoEncontradoException(codigo));
     }
 }
